@@ -54,7 +54,6 @@ ggtree <- function(tr,
                    root.position  = 0,
                    xlim = NULL,
                    ...) {
-
     # Check if layout string is valid.
     layout %<>% match.arg(c("rectangular", "slanted", "fan", "circular", 'inward_circular',
                             "radial", "unrooted", "equal_angle", "daylight", "dendrogram",

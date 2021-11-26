@@ -147,11 +147,10 @@ layoutEqualAngle <- function(model, branch.length = "branch.length"){
 ##' nodes = remove tip nodes.
 ##'
 ##' ```
-layoutDaylight <- function(model, branch.length, MAX_COUNT=5 ){
+layoutDaylight <- function(model, branch.length, MAX_COUNT=5, MINIMUM_AVERAGE_ANGLE_CHANGE=0.01 ){
 	tree <- as.phylo(model)
-
     ## How to set optimal
-    MINIMUM_AVERAGE_ANGLE_CHANGE <- 0.05
+    # MINIMUM_AVERAGE_ANGLE_CHANGE <- 0.05
 
 
     ## Initialize tree.
@@ -164,7 +163,6 @@ layoutDaylight <- function(model, branch.length, MAX_COUNT=5 ){
 
     ## Get list of internal nodes
     ## nodes <- tree_df[tree_df$IsTip != TRUE]$nodes
-
     nodes <- getNodesBreadthFirst.df(tree_df)
     ## select only internal nodes
     internal_nodes <- tree_df[!tree_df$isTip,]$node
@@ -238,7 +236,6 @@ layoutDaylight <- function(model, branch.length, MAX_COUNT=5 ){
 applyLayoutDaylight <- function(df, node_id){
   # Get lists of node ids for each subtree, including  rest of unrooted tree.
   subtrees <- getSubtreeUnrooted.df(df, node_id)
-
   # Return tree if only 2 or less subtrees to adjust.
   if(length(subtrees) <= 2){
     return( list(tree = df, max_change = 0.0) )
@@ -540,7 +537,7 @@ getSubtree.df <- function(df, node){
   ## }
     ## subtree
     #tidytree:::offspring.tbl_tree(df, node, self_include = TRUE)$node
-    offspring.tbl_tree(df, node, self_include = TRUE)$node
+    tidytree:::offspring.tbl_tree(df, node, self_include = TRUE)$node
 }
 
 ##' Get all subtrees of specified node. This includes all ancestors and relatives of node and
@@ -598,7 +595,7 @@ getSubtreeUnrooted <- function(tree, node){
 getSubtreeUnrooted.df <- function(df, node){
   # get subtree for each child node.
                                         # children_ids <- getChild.df(df, node)
-    children_ids <- child.tbl_tree(df, node)$node
+    children_ids <- tidytree:::child.tbl_tree(df, node)$node
   if (length(children_ids) == 0L) return(NULL)
   # if node leaf, return nothing.
 
@@ -610,7 +607,7 @@ getSubtreeUnrooted.df <- function(df, node){
 
   # The remaining nodes that are not found in the child subtrees are the remaining subtree nodes.
   # ie, parent node and all other nodes. We don't care how they are connected, just their id.
-  parent_id <- parent.tbl_tree(df, node)$node
+  parent_id <- tidytree:::parent.tbl_tree(df, node)$node
   # If node is not root.
   if ((length(parent_id) > 0) & (length(remaining_nodes) > 0)) {
     subtrees = tibble::add_row(subtrees, node = parent_id, subtree = list(remaining_nodes))
